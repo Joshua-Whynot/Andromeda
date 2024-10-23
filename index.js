@@ -2,10 +2,42 @@ const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
 const { token } = require('./config.json');
-
+const { Player } = require('discord-player');
+const { YoutubeiExtractor } = require("discord-player-youtubei") //PREVIEW VERSION - WILL BE REMOVED IN THE FUTURE
 // new client
-const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.GuildVoiceStates] });
 
+//new discord player
+const player = new Player(client);
+
+//register extractors
+player.extractors.register(YoutubeiExtractor, {});
+//player event listeners
+player.events.on('playerStart', (queue, track) => {
+	queue.metadata.send(`🎶 | Now playing: **${track.title}** in **${queue.connection.channel.name}**!`);
+});
+player.events.on('trackAdd', (queue, track) => {
+	queue.metadata.send(`🎶 | **${track.title}** has been added to the queue!`);
+});	
+player.events.on('channelEmpty', (queue) => {
+	queue.metadata.send(`🎶 | Nobody is in the voice channel, leaving...`);
+});
+player.events.on('botDisconnect', (queue) => {
+	queue.metadata.send(`🎶 | I was manually disconnected from the voice channel, clearing queue!`);
+});
+player.events.on('queueEnd', (queue) => {
+	queue.metadata.send(`🎶 | Queue finished!`);
+});
+player.events.on('trackError', (queue, track, error) => {
+	queue.metadata.send(`🎶 | An error occurred while playing: ${error}!`);
+});
+player.events.on('error', (error, queue) => {
+	console.error(`An error occurred in the queue: ${error}!`);
+	console.log(error);
+});
+player.events.on('playerError', (queue, error) => {
+	queue.metadata.send(`🎶 | An error occurred while playing: ${error}!`);
+});
 //command registration
 client.commands = new Collection();
 
@@ -32,7 +64,6 @@ client.on(Events.InteractionCreate, async interaction => {
     if (!interaction.isChatInputCommand()) return;
     console.log(interaction);
     const command = interaction.client.commands.get(interaction.commandName);
-
 	if (!command) {
 		console.error(`No command matching ${interaction.commandName} was found.`);
 		return;
