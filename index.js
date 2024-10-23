@@ -14,7 +14,7 @@ const player = new Player(client);
 player.extractors.register(YoutubeiExtractor, {});
 //player event listeners
 player.events.on('playerStart', (queue, track) => {
-	queue.metadata.send(`🎶 | Now playing: **${track.title}** in **${queue.connection.channel.name}**!`);
+	queue.metadata.send(`🎶 | Now playing: **${track.title}**`);
 });
 player.events.on('trackAdd', (queue, track) => {
 	queue.metadata.send(`🎶 | **${track.title}** has been added to the queue!`);
