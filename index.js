@@ -13,9 +13,9 @@ const player = new Player(client);
 //register extractors
 player.extractors.register(YoutubeiExtractor, {});
 //player event listeners
-player.events.on('playerStart', (queue, track) => {
-	queue.metadata.send(`🎶 | Now playing: **${track.title}**`);
-});
+//player.events.on('playerStart', (queue, track) => {
+//	queue.metadata.send(`Now playing: **${track.title}**`);
+//});
 player.events.on('trackAdd', (queue, track) => {
 	queue.metadata.send(`🎶 | **${track.title}** has been added to the queue!`);
 });	
@@ -29,7 +29,7 @@ player.events.on('queueEnd', (queue) => {
 	queue.metadata.send(`🎶 | Queue finished!`);
 });
 player.events.on('trackError', (queue, track, error) => {
-	queue.metadata.send(`🎶 | An error occurred while playing: ${error}!`);
+	queue.metadata.send(`🎶 | An error occurred while playing: ${track}!`);
 });
 player.events.on('error', (error, queue) => {
 	console.error(`An error occurred in the queue: ${error}!`);
